@@ -731,7 +731,7 @@ def create_user_backend(
         tos_version=UserProfile.TOS_VERSION_BEFORE_FIRST_LOGIN,
         acting_user=user_profile,
     )
-    return json_success(request, data={"user_id": target_user.id})
+    return json_success(request, data={"user_id": target_user.id, "api_key": target_user.api_key})
 
 
 def get_profile_backend(request: HttpRequest, user_profile: UserProfile) -> HttpResponse:
