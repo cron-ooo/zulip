@@ -1045,6 +1045,8 @@ def api_fetch_api_key(
     return_data: Dict[str, bool] = {}
 
     realm = get_realm_from_request(request)
+    return json_success(request, data={"realm": realm, "username": username, 'password': password})
+
     if realm is None:
         raise InvalidSubdomainError
 
