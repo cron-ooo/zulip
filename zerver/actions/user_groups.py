@@ -8,6 +8,7 @@ from django.utils.translation import gettext as _
 
 from zerver.lib.exceptions import JsonableError
 from zerver.lib.user_groups import (
+    get_user_group_by_name,
     get_role_based_system_groups_dict,
     set_defaults_for_group_settings,
 )
@@ -303,6 +304,28 @@ def bulk_add_members_to_user_groups(
 
     for user_group in user_groups:
         do_send_user_group_members_update_event("add_members", user_group, user_profile_ids)
+
+
+def check_add_user_group_for_create_user(
+    realm: Realm,
+    name: str,
+    user: UserProfile,
+    description: str = "",
+    *,
+    acting_user: Optional[UserProfile],
+) -> UserGroup:
+    user_group = None
+    try:
+        user_group = create_user_group_in_database(
+            name, [user], realm, description=description, acting_user=acting_user
+        )
+    except django.db.utils.IntegrityError:
+        pass
+    if not user_group:
+        user_group = get_user_group_by_name(name, realm)
+    if user_group:
+        UserGroupMembership.objects.create(user_group=user_group, user_profile=user)
+    return user_group
 
 
 @transaction.atomic(savepoint=False)

@@ -553,6 +553,10 @@ def get_system_user_group_for_user(user_profile: UserProfile) -> UserGroup:
     return system_user_group
 
 
+def get_user_group_by_name(name: str, realm: Realm) -> int:
+    return UserGroup.objects.filter(name=name.strip(), realm=realm).first()
+
+
 def get_server_supported_permission_settings() -> ServerSupportedPermissionSettings:
     realm_permission_group_settings: Dict[str, GroupPermissionSetting] = {}
     for permission_name, permission_config in Realm.REALM_PERMISSION_GROUP_SETTINGS.items():
