@@ -657,6 +657,7 @@ class MessageDict:
             "avatar_version",
             "is_mirror_dummy",
             "email_address_visibility",
+            "direct_groups__name",
         )
 
         rows = query_for_ids(query, sender_ids, "zerver_userprofile.id")
@@ -667,6 +668,7 @@ class MessageDict:
             sender_id = obj["sender_id"]
             user_row = sender_dict[sender_id]
             obj["sender_full_name"] = user_row["full_name"]
+            obj["sender_groups"] = user_row["direct_groups__name"]
             obj["sender_email"] = user_row["email"]
             obj["sender_delivery_email"] = user_row["delivery_email"]
             obj["sender_realm_str"] = user_row["realm__string_id"]
