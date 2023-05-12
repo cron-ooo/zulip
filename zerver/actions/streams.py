@@ -1,5 +1,6 @@
 import hashlib
 from collections import defaultdict
+from dataclasses import dataclass
 from typing import Any, Collection, Dict, Iterable, List, Mapping, Optional, Set, Tuple
 
 from django.conf import settings
@@ -350,6 +351,25 @@ def get_subscriber_ids(
 ) -> ValuesQuerySet[Subscription, int]:
     subscriptions_query = get_subscribers_query(stream, requesting_user)
     return subscriptions_query.values_list("user_profile_id", flat=True)
+
+
+def get_moderators_stream_ids(
+    stream: Stream, requesting_user: Optional[UserProfile] = None,
+    with_admins: Optional[bool] = True
+) -> ValuesQuerySet[Subscription, int]:
+    subscriptions_query = get_subscribers_query(stream, requesting_user)
+    roles = [UserProfile.ROLE_MODERATOR]
+    if with_admins:
+        roles = roles + [UserProfile.ROLE_REALM_ADMINISTRATOR]
+    subscriptions_query = subscriptions_query.filter(user_profile__role__in=roles)
+    return subscriptions_query.values_list("user_profile_id", flat=True)
+
+
+@dataclass
+class StreamInfo:
+    email_address: str
+    stream_weekly_traffic: Optional[int]
+    subscribers: List[int]
 
 
 def send_subscription_add_events(
