@@ -389,7 +389,9 @@ def login_or_register_remote_user(request: HttpRequest, result: ExternalAuthResu
         )
 
     do_login(request, user_profile)
-    redirect_to = request.headers.get("redirect_to")
+    redirect_to = request.headers.get("redirect_to", "")
+    if not redirect_to:
+        redirect_to = request.POST.get("redirect_to", "")
     if not redirect_to:
         redirect_to = result.data_dict.get("redirect_to", "")
 
