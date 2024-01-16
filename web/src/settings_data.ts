@@ -37,6 +37,16 @@ export function get_time_preferences(user_timezone: string): TimePreferences {
     };
 }
 
+export function user_can_invite_others_to_realm(): boolean {
+    if (
+        page_params.realm_invite_to_realm_policy ===
+        settings_config.invite_to_realm_policy_values.nobody.code
+    ) {
+        return false;
+    }
+    return user_has_permission(page_params.realm_invite_to_realm_policy);
+}
+
 export function user_can_change_name(): boolean {
     if (page_params.is_admin) {
         return true;
